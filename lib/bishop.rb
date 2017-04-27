@@ -1,8 +1,10 @@
 class Bishop
   attr_reader :poss_moves
+  attr_accessor :pos
 
-  def initialize
+  def initialize(coords)
     gen_moves
+    @pos = coords
   end
 
   def gen_moves

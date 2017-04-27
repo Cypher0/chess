@@ -1,8 +1,10 @@
 class King
   attr_reader :poss_moves
+  attr_accessor :pos
 
-  def initialize
+  def initialize(coords)
     @poss_moves = [[1-,0],[-1,1],[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1]]
+    @pos = coords
   end
 end
 
@@ -18,7 +20,7 @@ end
 class BKing < King
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u265A"
     @color = :black
   end

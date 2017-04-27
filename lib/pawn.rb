@@ -1,8 +1,10 @@
 class Pawn
   attr_reader :poss_moves
+  attr_accessor :pos
   
-  def initialize
+  def initialize(coords)
     @poss_moves = [[0,1]]
+    @pos = coords
   end
 end
 

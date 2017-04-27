@@ -1,7 +1,9 @@
 class Queen
   attr_reader :poss_moves
+  attr_accessor :pos
 
-  def initialize
+  def initialize(coords)
+    @pos = coords
     gen_moves
   end
 
