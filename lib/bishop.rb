@@ -18,7 +18,7 @@ end
 class WBishop < Bishop
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u2657"
     @color = :white
   end
@@ -27,7 +27,7 @@ end
 class BBishop < Bishop
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u265D"
     @color = :black
   end

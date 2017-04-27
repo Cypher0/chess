@@ -19,7 +19,7 @@ end
 class WRook < Rook
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u2656"
     @color = :white
   end
@@ -28,7 +28,7 @@ end
 class BRook < Rook
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u265C"
     @color = :black
   end

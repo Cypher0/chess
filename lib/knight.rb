@@ -11,7 +11,7 @@ end
 class WKnight < Knight
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u2658"
     @color = :white
   end
@@ -20,7 +20,7 @@ end
 class BKnight < Knight
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u265E"
     @color = :black
   end

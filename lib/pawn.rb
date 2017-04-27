@@ -11,7 +11,7 @@ end
 class WPawn < Pawn
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u2659"
     @color = :white
   end
@@ -20,7 +20,7 @@ end
 class BPawn < Pawn
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u265F"
     @color = :black
   end

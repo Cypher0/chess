@@ -21,7 +21,7 @@ end
 class WQueen < Queen
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u2655"
     @color = :white
   end
@@ -30,7 +30,7 @@ end
 class BQueen < Queen
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u265B"
     @color = :black
   end

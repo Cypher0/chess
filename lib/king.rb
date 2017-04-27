@@ -3,7 +3,7 @@ class King
   attr_accessor :pos
 
   def initialize(coords)
-    @poss_moves = [[1-,0],[-1,1],[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1]]
+    @poss_moves = [[-1,0],[-1,1],[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1]]
     @pos = coords
   end
 end
@@ -11,7 +11,7 @@ end
 class WKing < King
   attr_reader :sym, :color
 
-  def initialize
+  def initialize(coords)
     @sym = "\u2654"
     @color = :white
   end
