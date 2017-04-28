@@ -2,9 +2,8 @@ class Bishop
   attr_reader :poss_moves
   attr_accessor :pos
 
-  def initialize(coords)
+  def initialize
     gen_moves
-    @pos = coords
   end
 
   def gen_moves
@@ -19,6 +18,7 @@ class WBishop < Bishop
   attr_reader :sym, :color
 
   def initialize(coords)
+    @ƥos = coords
     @sym = "\u2657"
     @color = :white
   end
@@ -28,6 +28,7 @@ class BBishop < Bishop
   attr_reader :sym, :color
 
   def initialize(coords)
+    @pos = coords
     @sym = "\u265D"
     @color = :black
   end
