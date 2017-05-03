@@ -1,10 +1,9 @@
 class Square
   attr_reader :coords
-  attr_accessor :color, :piece
+  attr_accessor :piece
 
-  def initialize(coords, color = nil, piece = nil)
+  def initialize(coords, piece = nil)
     @coords = coords
-    @color = color
     @piece = piece
   end
 end
