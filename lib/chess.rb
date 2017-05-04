@@ -1,6 +1,11 @@
 require_relative 'player'
 require_relative 'square'
 require_relative 'king'
+require_relative 'queen'
+require_relative 'pawn'
+require_relative 'rook'
+require_relative 'bishop'
+require_relative 'knight'
 
 class Chess
   attr_reader :plr1, :plr2
@@ -85,4 +90,51 @@ class Chess
       pos.piece = BKnight.new(coords)
     end
   end
+
+  def setup_kings
+    add_king([4,0], :white)
+    add_king([4,7], :black)
+  end
+
+  def setup_queens
+    add_queen([3,0], :white)
+    add_queen([3,7], :black)
+  end
+
+  def setup_pawns
+    (0..7).each do |i|
+      add_pawn([i,1], :white)
+      add_pawn([i,6], :black)
+    end
+  end
+
+  def setup_rooks
+    add_rook([0,0], :white)
+    add_rook([7,0], :white)
+    add_rook([0,7], :black)
+    add_rook([7,7], :black)
+  end
+
+  def setup_bishops
+    add_bishop([2,0], :white)
+    add_bishop([5,0], :white)
+    add_bishop([2,7], :black)
+    add_bishop([5,7], :black)
+  end
+
+  def setup_knights
+    add_knight([1,0], :white)
+    add_knight([6,0], :white)
+    add_knight([1,7], :black)
+    add_knight([6,7], :black)
+  end
+
+  def setup_pieces # DRY this!
+    setup_kings
+    setup_queens
+    setup_pawns
+    setup_rooks
+    setup_bishops
+    setup_knights
+  end  
 end
