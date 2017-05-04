@@ -23,4 +23,12 @@ class Chess
       end
     end
   end
+
+  def switch_plrs
+    @act_plr = if @act_plr == @plr1
+                 @plr2
+               else
+                 @plr1
+               end
+  end
 end
