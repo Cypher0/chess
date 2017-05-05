@@ -146,4 +146,41 @@ class Chess
       i += 8
     end
   end
+
+  def print_row(i)
+    print ["246#{i}".to_i(16)].pack('U*') + ' '
+  end
+
+  def print_col(i)
+    print ["24b#{i}".to_i(16)].pack('U*') + ' '
+  end
+
+  def print_cols
+    print '  '
+    (6..9).each do |n|
+      print_col(n)
+    end
+    ("a".."d").each do |n|
+      print_col(n)
+    end
+  end
+
+  def display_board
+    gen_rows
+    setup_pieces
+    row_index = 7
+    @rows.each do |row|
+      print_row(row_index)
+      row.each do |sq|
+        if sq.piece.nil?
+          print "  "
+        else
+          print "#{sq.piece.sym} "
+        end
+      end
+      print "\n"
+      row_index -= 1
+    end
+    print_cols
+  end
 end
