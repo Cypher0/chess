@@ -9,7 +9,7 @@ require_relative 'knight'
 
 class Chess
   attr_reader :plr1, :plr2
-  attr_accessor :act_plr, :board
+  attr_accessor :act_plr, :board, :rows, :rem_pieces, :taken_pieces
 
   def initialize(name_1, name_2)
     @plr1 = Player.new(name_1, :white, WKing.new([4,0]))
@@ -18,6 +18,7 @@ class Chess
     @rem_pieces = []
     @taken_pieces = []
     gen_board
+    @rows = []
   end
 
   def gen_board
@@ -136,5 +137,13 @@ class Chess
     setup_rooks
     setup_bishops
     setup_knights
-  end  
+  end
+
+  def gen_rows
+    i = 0
+    8.times do
+      @rows << @board[i..(i+7)]
+      i += 8
+    end
+  end
 end
