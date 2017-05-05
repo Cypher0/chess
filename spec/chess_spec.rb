@@ -3,10 +3,9 @@ require 'chess'
 describe 'Chess' do
 
   let(:game) { Chess.new('White', 'Black') }
+  before { game.gen_board }
 
   describe '#gen_board' do
-
-    before { game.gen_board }
 
     it 'creates an array' do
       expect(game.board).to be_an Array
@@ -44,10 +43,7 @@ describe 'Chess' do
 
   describe '#setup_pieces' do
 
-    before do
-      game.gen_board
-      game.setup_pieces
-    end
+    before { game.setup_pieces }
 
     it 'adds kings to correct positions' do
       expect(game.board[4].piece).to be_a WKing
@@ -79,6 +75,21 @@ describe 'Chess' do
       expect(game.board[15].piece).to be_a WPawn
       expect(game.board[-9].piece).to be_a BPawn
       expect(game.board[-15].piece).to be_a BPawn
+    end
+  end
+
+  describe '#gen_rows' do
+
+    before { game.gen_rows }
+
+    it 'creates 8 rows' do
+      expect(game.rows.size).to eql(8)
+    end
+
+    it 'adds 8 squares to each row' do
+      expect(game.rows[0].size).to eql(8)
+      expect(game.rows[5].size).to eql(8)
+      expect(game.rows[-1].size).to eql(8)
     end
   end
 end
