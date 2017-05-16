@@ -61,6 +61,10 @@ describe 'Board' do
       expect(board.squares[-9].piece).to be_a BPawn
       expect(board.squares[-15].piece).to be_a BPawn
     end
+
+    it 'keeps track of all pieces' do
+      expect(board.rem_pieces.size).to eql(32)
+    end
   end
 
   describe '#gen_rows' do
@@ -75,6 +79,147 @@ describe 'Board' do
       expect(board.rows[0].size).to eql(8)
       expect(board.rows[5].size).to eql(8)
       expect(board.rows[-1].size).to eql(8)
+    end
+  end
+
+  describe '#conv_coords' do
+
+    it 'converts chess position to coordinates' do
+      expect(board.conv_coords('a1')).to eql([0,0])
+      expect(board.conv_coords('C5')).to eql([2,4])
+    end
+  end
+
+  describe '#move' do
+
+    before do 
+      board.add_king([0,0], :white)
+      board.add_pawn([1,0], :black)
+      board.move([0,0],[1,0])
+    end
+
+    it 'removes target piece from starting square' do
+      expect(board.squares[0].piece).to be nil
+    end
+
+    it 'adds target piece to destination square' do
+      expect(board.squares[1].piece).to be_a WKing
+    end
+
+    it 'removes taken piece' do
+      expect(board.rem_pieces.size).to eql(1)
+    end
+
+    it 'adds taken piece to corresponding array' do
+      expect(board.taken_pieces.size).to eql(1)
+    end
+  end
+
+  describe '#draw_str_path' do
+
+    it 'returns an array' do
+      expect(board.draw_str_path([0,0],[0,7])).to be_an Array
+    end
+
+    context 'moving horisontally' do
+
+      context 'by one square' do
+
+        it 'returns empty path' do
+          expect(board.draw_str_path([0,0],[1,0]).size).to eql(0)
+          expect(board.draw_str_path([1,0],[0,0]).size).to eql(0)
+        end
+      end
+
+      context 'by multiple squares' do
+
+        it 'returns path with correct length' do
+          expect(board.draw_str_path([0,0],[6,0]).size).to eql(5)
+          expect(board.draw_str_path([7,3],[4,3]).size).to eql(2)
+        end
+      end
+    end
+
+    context 'moving vertically' do
+
+      context 'by one square' do
+
+        it 'returns empty path' do
+          expect(board.draw_str_path([0,0],[0,1]).size).to eql(0)
+          expect(board.draw_str_path([0,1],[0,0]).size).to eql(0)
+        end
+      end
+
+      context 'by multiple squares' do
+
+        it 'returns path with correct length' do
+          expect(board.draw_str_path([0,7],[0,1]).size).to eql(5)
+          expect(board.draw_str_path([3,3],[3,6]).size).to eql(2)
+        end
+      end
+    end
+  end
+
+  describe '#draw_diag_path' do
+
+    it 'returns an array' do
+      expect(board.draw_diag_path([0,0],[1,1])).to be_an Array
+    end
+
+    context 'moving by one square' do
+
+      it 'returns empty path' do
+        expect(board.draw_diag_path([0,0],[1,1]).size).to eql(0)
+        expect(board.draw_diag_path([2,0],[1,1]).size).to eql(0)
+        expect(board.draw_diag_path([5,5],[4,4]).size).to eql(0)
+        expect(board.draw_diag_path([1,5],[2,4]).size).to eql(0)
+      end
+    end
+
+    context 'moving by multiple squares' do
+
+      it 'returns path with correct size' do
+        expect(board.draw_diag_path([0,0],[5,5]).size).to eql(4)
+        expect(board.draw_diag_path([3,5],[7,1]).size).to eql(3)
+        expect(board.draw_diag_path([2,4],[0,2]).size).to eql(1)
+        expect(board.draw_diag_path([6,0],[0,6]).size).to eql(5)
+      end
+    end
+  end
+
+  describe '#path_clear?' do
+
+    before { board.add_pawn([2,2], :white) }
+
+    context 'when moving by one square' do
+
+      it 'returns true' do
+        expect(board.path_clear?([1,1],[2,2])).to be true
+        expect(board.path_clear?([2,3],[2,2])).to be true
+      end
+    end
+
+    context 'when moving multiple squares' do
+
+      it 'returns true on a clear path' do
+        expect(board.path_clear?([3,3],[7,7])).to be true
+        expect(board.path_clear?([2,2],[2,5])).to be true
+      end
+
+      it 'returns false on a blocked path' do
+        expect(board.path_clear?([1,1],[3,3])).to be false
+        expect(board.path_clear?([2,0],[2,4])).to be false
+        expect(board.path_clear?([5,2],[1,2])).to be false
+      end
+    end
+
+    context 'when no direct path exists' do
+
+      it 'returns true' do
+        expect(board.path_clear?([2,0],[3,2])).to be true
+        expect(board.path_clear?([1,1],[6,5])).to be true
+        expect(board.path_clear?([0,0],[1,2])).to be true
+      end
     end
   end
 end
