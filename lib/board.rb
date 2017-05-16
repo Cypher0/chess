@@ -25,58 +25,64 @@ class Board
     end
   end
 
-    def add_king(coords, color, board = @squares)
+    def add_king(coords, color)
     pos = @squares.find { |sq| sq.coords == coords }
     if color == :white
       pos.piece = WKing.new([4,0])
     elsif color == :black
       pos.piece = BKing.new([4,7])
     end
+    @rem_pieces << pos.piece
   end
 
-  def add_queen(coords, color, board = @squares)
+  def add_queen(coords, color)
     pos = @squares.find { |sq| sq.coords == coords }
     if color == :white
       pos.piece = WQueen.new(coords)
     elsif color == :black
       pos.piece = BQueen.new(coords)
     end
+    @rem_pieces << pos.piece
   end
 
-  def add_pawn(coords, color, board = @squares)
+  def add_pawn(coords, color)
     pos = @squares.find { |sq| sq.coords == coords }
     if color == :white
       pos.piece = WPawn.new(coords)
     elsif color == :black
       pos.piece = BPawn.new(coords)
     end
+    @rem_pieces << pos.piece
   end
 
-  def add_rook(coords, color, board = @squares)
+  def add_rook(coords, color)
     pos = @squares.find { |sq| sq.coords == coords }
     if color == :white
       pos.piece = WRook.new(coords)
     elsif color == :black
       pos.piece = BRook.new(coords)
     end
+    @rem_pieces << pos.piece
   end
 
-  def add_bishop(coords, color, board = @squares)
+  def add_bishop(coords, color)
     pos = @squares.find { |sq| sq.coords == coords }
     if color == :white
       pos.piece = WBishop.new(coords)
     elsif color == :black
       pos.piece = BBishop.new(coords)
     end
+    @rem_pieces << pos.piece
   end
 
-  def add_knight(coords, color, board = @squares)
+  def add_knight(coords, color)
     pos = @squares.find { |sq| sq.coords == coords }
     if color == :white
       pos.piece = WKnight.new(coords)
     elsif color == :black
       pos.piece = BKnight.new(coords)
     end
+    @rem_pieces << pos.piece
   end
 
   def setup_kings
@@ -167,5 +173,69 @@ class Board
       row_index -= 1
     end
     print_cols
+  end
+
+  def take_piece(coords)
+    target = @squares.find { |sq| sq.coords == coords }
+    @taken_pieces << target.piece
+    @rem_pieces.delete(target.piece)
+  end
+
+  def move(a, b)
+    start = @squares.find { |sq| sq.coords == a }
+    target = @squares.find { |sq| sq.coords == b }
+    take_piece(target.coords) unless target.piece.nil?
+    target.piece = start.piece
+    start.piece = nil
+  end
+
+  def conv_coords(string)
+    result = []
+    cols = { 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4, 'f' => 5, 'g' => 6, 'h' => 7 }
+    result << cols[string[0].downcase] << string[1].to_i - 1
+    result
+  end
+
+  def draw_str_path(start, dest)
+    path = []
+    if start[0] == dest[0]
+      start[1] < dest[1] ? current = [start[0], start[1] + 1] : current = [start[0], start[1] - 1]
+      until current == dest do
+        path << @squares.find { |sq| sq.coords == current }
+        current[1] < dest[1] ? current[1] += 1 : current[1] -= 1
+      end
+    else
+      start[0] < dest[0] ? current = [start[0] + 1, start[1]] : current = [start[0] - 1, start[1]]
+      until current == dest do
+        path << @squares.find { |sq| sq.coords == current }
+        current[0] < dest[0] ? current[0] += 1 : current[0] -= 1
+      end
+    end
+    path
+  end
+
+  def draw_diag_path(start, dest)
+    path = []
+    current = start
+    current[0] < dest[0] ? current[0] += 1 : current[0] -= 1
+    current[1] < dest[1] ? current[1] += 1 : current[1] -= 1
+    until current == dest do
+      path << @squares.find { |sq| sq.coords == current }
+      current[0] < dest[0] ? current[0] += 1 : current[0] -= 1
+      current[1] < dest[1] ? current[1] += 1 : current[1] -= 1
+    end
+    path
+  end
+
+  def path_clear?(start, dest)
+    if start[0] == dest[0] || start[1] == dest[1]
+      path = draw_str_path(start, dest)
+    elsif start[0] + start[1] == dest[0] + dest[1] ||
+          start[0] - start[1] == dest[0] - dest[1]
+      path = draw_diag_path(start, dest)
+    else
+      path = []
+    end
+    path.all? { |sq| sq.piece == nil } || path.size.zero?
   end
 end
