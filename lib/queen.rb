@@ -2,7 +2,8 @@ class Queen
   attr_reader :poss_moves
   attr_accessor :pos
 
-  def initialize
+  def initialize(coords)
+    @ƥos = coords
     gen_moves
   end
 
@@ -21,7 +22,7 @@ class WQueen < Queen
   attr_reader :sym, :color
 
   def initialize(coords)
-    @pos = coords
+    super
     @sym = "\u2655"
     @color = :white
   end
@@ -31,7 +32,7 @@ class BQueen < Queen
   attr_reader :sym, :color
 
   def initialize(coords)
-    @pos = coords
+    super
     @sym = "\u265B"
     @color = :black
   end

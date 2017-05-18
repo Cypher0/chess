@@ -2,7 +2,8 @@ class Rook
   attr_reader :poss_moves
   attr_accessor :pos
 
-  def initialize
+  def initialize(coords)
+    @pos = coords
     gen_moves
   end
 
@@ -19,7 +20,7 @@ class WRook < Rook
   attr_reader :sym, :color
 
   def initialize(coords)
-    @pos = coords
+    super
     @sym = "\u2656"
     @color = :white
   end
@@ -29,7 +30,7 @@ class BRook < Rook
   attr_reader :sym, :color
 
   def initialize(coords)
-    @pos = coords
+    super
     @sym = "\u265C"
     @color = :black
   end

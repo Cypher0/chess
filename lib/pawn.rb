@@ -2,8 +2,9 @@ class Pawn
   attr_reader :poss_moves
   attr_accessor :pos
   
-  def initialize
+  def initialize(coords)
     @poss_moves = [[0,1]]
+    @pos = coords
   end
 end
 
@@ -11,7 +12,7 @@ class WPawn < Pawn
   attr_reader :sym, :color
 
   def initialize(coords)
-    @pos = coords
+    super
     @sym = "\u2659"
     @color = :white
   end
@@ -21,7 +22,7 @@ class BPawn < Pawn
   attr_reader :sym, :color
 
   def initialize(coords)
-    @pos = coords
+    super
     @sym = "\u265F"
     @color = :black
   end
