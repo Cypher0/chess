@@ -19,4 +19,12 @@ class Chess
                  @plr1
                end
   end
+
+  def legal_move?(start, dest)
+    a = @board.squares.find { |sq| sq.coords == start }
+    b = @board.squares.find { |sq| sq.coords == dest }
+    @board.path_clear?(start, dest) &&
+    (b.piece.nil? || @act_plr.color != b.piece.color) &&
+    a.piece.poss_moves.any? { |mv| mv.map.with_index { |v, i| v + start[i] } == dest }
+  end
 end
