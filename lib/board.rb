@@ -236,6 +236,6 @@ class Board
     else
       path = []
     end
-    path.all? { |sq| sq.piece == nil } || path.size.zero?
+    path.size.zero? || path.all? { |sq| sq.piece == nil }
   end
 end
