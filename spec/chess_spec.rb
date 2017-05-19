@@ -17,4 +17,87 @@ describe 'Chess' do
       expect(game.act_plr).to eql(game.plr1)
     end
   end
+
+  describe '#legal_move?' do
+
+    before do
+      game.board.add_queen([0,0], :white)
+      game.board.add_knight([1,0], :black)
+      game.board.add_pawn([3,1], :black)
+      game.board.add_pawn([0,2], :white)
+    end
+
+    context 'moving a queen' do
+
+      context 'to empty square' do
+
+        it 'returns true' do
+          expect(game.legal_move?([0,0],[0,1])).to be true
+          expect(game.legal_move?([0,0],[5,5])).to be true
+        end
+      end
+
+      context 'to square with opponent\'s piece' do
+
+        it 'returns true' do
+          expect(game.legal_move?([0,0],[1,0])).to be true
+        end
+      end
+
+      context 'to square with your own piece' do
+
+        it 'returns false' do
+          expect(game.legal_move?([0,0],[0,5])).to be false
+        end
+      end
+
+      context 'to square not on direct path' do
+
+        it 'returns false' do
+          expect(game.legal_move?([0,0],[1,2])).to be false
+        end
+      end
+
+      context 'jumping over a piece' do
+
+        it 'returns false' do
+          expect(game.legal_move?([0,0],[4,0])).to be false
+          expect(game.legal_move?([0,0],[0,3])).to be false
+        end
+      end
+    end
+
+    context 'moving a knight' do
+
+      before { game.switch_plrs }
+
+      context 'to empty square' do
+
+        it 'returns true' do
+          expect(game.legal_move?([1,0],[2,2])).to be true
+        end
+      end
+
+      context 'to square with own piece' do
+
+        it 'returns false' do
+          expect(game.legal_move?([1,0],[3,1])).to be false
+        end
+      end
+
+      context 'to square with opponent\'s piece' do
+
+        it 'returns true' do
+          expect(game.legal_move?([1,0],[0,2])).to be true
+        end
+      end
+
+      context 'to non-reachable square' do
+
+        it 'return false' do
+          expect(game.legal_move?([1,0],[3,2])).to be false
+        end
+      end
+    end
+  end
 end
