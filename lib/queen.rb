@@ -3,7 +3,7 @@ class Queen
   attr_accessor :pos
 
   def initialize(coords)
-    @ƥos = coords
+    @pos = coords
     gen_moves
   end
 
