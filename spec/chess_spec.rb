@@ -100,4 +100,37 @@ describe 'Chess' do
       end
     end
   end
+
+  describe '#check?' do
+
+    before do
+      game.board.add_king([0,0], :black)
+    end
+
+    context 'when targeted by opponent\'s piece' do
+
+      it 'returns true' do
+        game.board.add_knight([1,2], :white)
+        expect(game.check?(game.plr2)).to be true
+      end
+    end
+
+    context 'when targeted by own piece' do
+
+      it 'returns false' do
+        game.board.add_queen([7,0], :black)
+        expect(game.check?(game.plr2)).to be false
+      end
+    end
+
+    context 'when opponent\'s path is blocked' do
+
+      it 'returns false' do
+        game.board.add_queen([0,7], :white)
+        game.board.add_pawn([0,4], :white)
+        expect(game.check?(game.plr2)).to be false
+      end
+    end
+  end
+
 end
