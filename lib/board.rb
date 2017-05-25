@@ -28,9 +28,9 @@ class Board
     def add_king(coords, color)
     pos = @squares.find { |sq| sq.coords == coords }
     if color == :white
-      pos.piece = WKing.new([4,0])
+      pos.piece = WKing.new(coords)
     elsif color == :black
-      pos.piece = BKing.new([4,7])
+      pos.piece = BKing.new(coords)
     end
     @rem_pieces << pos.piece
   end
@@ -181,9 +181,9 @@ class Board
     @rem_pieces.delete(target.piece)
   end
 
-  def move(a, b)
-    start = @squares.find { |sq| sq.coords == a }
-    target = @squares.find { |sq| sq.coords == b }
+  def move(a, b, board = @squares)
+    start = board.find { |sq| sq.coords == a }
+    target = board.find { |sq| sq.coords == b }
     take_piece(target.coords) unless target.piece.nil?
     target.piece = start.piece
     start.piece = nil
