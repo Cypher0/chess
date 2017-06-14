@@ -21,6 +21,7 @@ describe 'Chess' do
   describe '#legal_move?' do
 
     before do
+      game.board.add_king([7,7], :white)
       game.board.add_queen([0,0], :white)
       game.board.add_knight([1,0], :black)
       game.board.add_pawn([3,1], :black)
@@ -133,4 +134,27 @@ describe 'Chess' do
     end
   end
 
+  describe '#stalemate?' do
+
+    it 'returns true ex. 1' do
+      game.board.add_king([5,6], :white)
+      game.board.add_queen([6,5], :white)
+      game.board.add_king([7,7], :black)
+      expect(game.stalemate?(game.plr2)).to be true
+    end
+
+    it 'returns true ex. 2' do
+      game.board.add_king([0,0], :black)
+      game.board.add_rook([1,1], :white)
+      game.board.add_king([2,2], :white)
+      expect(game.stalemate?(game.plr2)).to be true
+    end
+
+    it 'returns true ex. 3' do
+      game.board.add_king([0,7], :black)
+      game.board.add_king([0,5], :white)
+      game.board.add_bishop([5,3], :white)
+      expect(game.stalemate?(game.plr2)).to be true
+    end
+  end
 end
