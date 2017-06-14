@@ -181,11 +181,12 @@ class Board
     @rem_pieces.delete(target.piece)
   end
 
-  def move(a, b, board = @squares)
-    start = board.find { |sq| sq.coords == a }
-    target = board.find { |sq| sq.coords == b }
+  def move(a, b)
+    start = @squares.find { |sq| sq.coords == a }
+    target = @squares.find { |sq| sq.coords == b }
     take_piece(target.coords) unless target.piece.nil?
     target.piece = start.piece
+    target.piece.pos = target.coords
     start.piece = nil
   end
 
@@ -216,9 +217,9 @@ class Board
 
   def draw_diag_path(start, dest)
     path = []
-    current = start
-    current[0] < dest[0] ? current[0] += 1 : current[0] -= 1
-    current[1] < dest[1] ? current[1] += 1 : current[1] -= 1
+    current = []
+    start[0] < dest[0] ? current[0] = start[0] + 1 : current[0] = start[0] - 1
+    start[1] < dest[1] ? current[1] = start[1] + 1 : current[1] = start[1] - 1
     until current == dest do
       path << @squares.find { |sq| sq.coords == current }
       current[0] < dest[0] ? current[0] += 1 : current[0] -= 1
@@ -228,11 +229,11 @@ class Board
   end
 
   def path_clear?(start, dest)
-    if start[0] == dest[0] || start[1] == dest[1]
-      path = draw_str_path(start, dest)
-    elsif start[0] + start[1] == dest[0] + dest[1] ||
-          start[0] - start[1] == dest[0] - dest[1]
+    if start[0] + start[1] == dest[0] + dest[1] ||
+        start[0] - start[1] == dest[0] - dest[1]
       path = draw_diag_path(start, dest)
+    elsif start[0] == dest[0] || start[1] == dest[1]
+      path = draw_str_path(start, dest)
     else
       path = []
     end
