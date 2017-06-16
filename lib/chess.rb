@@ -24,6 +24,7 @@ class Chess
     return false unless (start + dest).all? { |i| i.between?(0,7)}
     a = board.squares.find { |sq| sq.coords == start }
     b = board.squares.find { |sq| sq.coords == dest }
+    a.piece.gen_moves(@board.squares) if a.piece.class < Pawn
     !a.piece.nil? &&
     board.path_clear?(start, dest) &&
     (b.piece.nil? || a.piece.color != b.piece.color) &&
@@ -55,3 +56,5 @@ class Chess
     true
   end
 end
+
+game = Chess.new('a','b')
