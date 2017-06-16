@@ -21,7 +21,6 @@ describe 'Chess' do
   describe '#legal_move?' do
 
     before do
-      game.board.add_king([7,7], :white)
       game.board.add_queen([0,0], :white)
       game.board.add_knight([1,0], :black)
       game.board.add_pawn([3,1], :black)
@@ -48,7 +47,7 @@ describe 'Chess' do
       context 'to square with your own piece' do
 
         it 'returns false' do
-          expect(game.legal_move?([0,0],[0,5])).to be false
+          expect(game.legal_move?([0,0],[0,2])).to be false
         end
       end
 
@@ -69,8 +68,6 @@ describe 'Chess' do
     end
 
     context 'moving a knight' do
-
-      before { game.switch_plrs }
 
       context 'to empty square' do
 
@@ -97,6 +94,56 @@ describe 'Chess' do
 
         it 'return false' do
           expect(game.legal_move?([1,0],[3,2])).to be false
+        end
+      end
+    end
+
+    context 'moving a pawn' do
+
+      context 'one square forward' do
+
+        before { game.board.squares[16].piece.gen_moves(game.board.squares) }
+
+        context 'to empty square' do
+
+          it 'returns true' do
+            expect(game.legal_move?([0,2],[0,3])).to be true
+          end
+        end
+
+        context 'to occupied square' do
+         
+          it 'returns false' do
+            game.board.add_pawn([0,3], :black)
+            expect(game.legal_move?([0,2],[0,3])).to be false
+          end
+        end
+      end
+
+      context 'two squares forward' do
+
+        context 'from starting position' do
+
+          it 'returns true' do
+            game.board.add_pawn([7,1], :white)
+            game.board.squares[15].piece.gen_moves(game.board.squares)
+            expect(game.legal_move?([7,1],[7,3])).to be true
+          end
+        end
+
+        context 'from random position' do
+
+          it 'returns false' do
+            expect(game.legal_move?([0,2],[0,4])).to be false
+          end
+        end
+      end
+
+      context 'capturing a piece' do
+
+        it 'returns true' do
+          game.board.add_pawn([1,3], :black)
+          expect(game.legal_move?([0,2],[1,3])).to be true
         end
       end
     end
