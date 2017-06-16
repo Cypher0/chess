@@ -56,5 +56,3 @@ class Chess
     true
   end
 end
-
-game = Chess.new('a','b')

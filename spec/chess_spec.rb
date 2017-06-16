@@ -203,5 +203,12 @@ describe 'Chess' do
       game.board.add_bishop([5,3], :white)
       expect(game.stalemate?(game.plr2)).to be true
     end
+
+    it 'returns true ex. 4' do
+      game.board.add_queen([5,5], :white)
+      game.board.add_pawn([5,6], :white)
+      game.board.add_king([5,7], :black)
+      expect(game.stalemate?(game.plr2)).to be true
+    end
   end
 end
