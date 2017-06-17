@@ -139,11 +139,31 @@ describe 'Chess' do
         end
       end
 
-      context 'capturing a piece' do
+      context 'one square diagonally' do
 
-        it 'returns true' do
-          game.board.add_pawn([1,3], :black)
-          expect(game.legal_move?([0,2],[1,3])).to be true
+        context 'to empty square' do
+
+          it 'returns false' do
+            expect(game.legal_move?([0,2],[1,3])).to be false
+          end
+        end
+
+        context 'en passant' do
+
+          it 'returns true' do
+            game.board.add_pawn([1,4], :black)
+            game.board.move([1,4],[1,2])
+            game.board.squares[16].piece.gen_moves(game.board.squares)
+            expect(game.legal_move?([0,2],[1,3])).to be true
+          end
+        end
+
+        context 'capturing a piece' do
+
+          it 'returns true' do
+            game.board.add_pawn([1,3], :black)
+            expect(game.legal_move?([0,2],[1,3])).to be true
+          end
         end
       end
     end
