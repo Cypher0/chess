@@ -184,10 +184,15 @@ class Board
   def move(a, b)
     start = @squares.find { |sq| sq.coords == a }
     target = @squares.find { |sq| sq.coords == b }
-    take_piece(target.coords) unless target.piece.nil?
+    if start.piece.class < Pawn && (b[1] - a[1] == 2 || a[1] - b[1] == 2)
+      start.piece.passable = true
+    end
+    take_piece(b) unless target.piece.nil?
     target.piece = start.piece
     target.piece.pos = target.coords
     start.piece = nil
+    take_piece([b[0], b[1] - 1]) if target.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] - 1] }.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] - 1] }.piece.passable == true
+    take_piece([b[0], b[1] + 1]) if target.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] + 1] }.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] + 1] }.piece.passable == true
   end
 
   def conv_coords(string)

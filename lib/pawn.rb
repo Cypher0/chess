@@ -1,8 +1,9 @@
 class Pawn
-  attr_accessor :pos
+  attr_accessor :pos, :passable
   
   def initialize(coords)
     @pos = coords
+    @passable = false
   end
 end
 
@@ -20,7 +21,9 @@ class WPawn < Pawn
     @poss_moves << [0,2] if @pos[1] == 1
     @poss_moves << [0,1] if within_board?([@pos[0], @pos[1] + 1]) && find_piece([@pos[0],@pos[1] + 1], board).nil?
     @poss_moves << [-1,1] if within_board?([@pos[0] - 1, @pos[1] + 1]) && !find_piece([@pos[0] - 1, @pos[1] + 1], board).nil? && find_piece([@pos[0] - 1, @pos[1] + 1], board).color != @color
+    @poss_moves << [-1,1] if within_board?([@pos[0] - 1, @pos[1] + 1]) && !find_piece([@pos[0] - 1, @pos[1]], board).nil? && find_piece([@pos[0] - 1, @pos[1]], board).passable == true
     @poss_moves << [1,1] if within_board?([@pos[0] + 1, @pos[1] + 1]) && !find_piece([@pos[0] + 1, @pos[1] + 1], board).nil? && find_piece([@pos[0] + 1, @pos[1] + 1], board).color != @color
+    @poss_moves << [1,1] if within_board?([@pos[0] + 1, @pos[1] + 1]) && !find_piece([@pos[0] + 1, @pos[1]], board).nil? && find_piece([@pos[0] + 1, @pos[1]], board).passable == true
   end
 end
 
@@ -38,7 +41,9 @@ class BPawn < Pawn
     @poss_moves << [0,-2] if @pos[1] == 6
     @poss_moves << [0,-1] if within_board?([@pos[0], @pos[1] - 1]) && find_piece([@pos[0],@pos[1] - 1], board).nil?
     @poss_moves << [-1,-1] if within_board?([@pos[0] - 1, @pos[1] - 1]) && !find_piece([@pos[0] - 1, @pos[1] - 1], board).nil? && find_piece([@pos[0] - 1, @pos[1] - 1], board).color != @color
+    @poss_moves << [-1,-1] if within_board?([@pos[0] - 1, @pos[1] - 1]) && !find_piece([@pos[0] - 1, @pos[1]], board).nil? && find_piece([@pos[0] - 1, @pos[1]], board).passable == true    
     @poss_moves << [1,-1] if within_board?([@pos[0] + 1, @pos[1] - 1]) && !find_piece([@pos[0] + 1, @pos[1] - 1], board).nil? && find_piece([@pos[0] + 1, @pos[1] - 1], board).color != @color
+    @poss_moves << [1,-1] if within_board?([@pos[0] + 1, @pos[1] - 1]) && !find_piece([@pos[0] + 1, @pos[1]], board).nil? && find_piece([@pos[0] + 1, @pos[1]], board).passable == true
   end  
 end
 
