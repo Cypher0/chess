@@ -25,7 +25,7 @@ class Board
     end
   end
 
-    def add_king(coords, color)
+  def add_king(coords, color)
     pos = @squares.find { |sq| sq.coords == coords }
     if color == :white
       pos.piece = WKing.new(coords)
@@ -179,6 +179,7 @@ class Board
     target = @squares.find { |sq| sq.coords == coords }
     @taken_pieces << target.piece
     @rem_pieces.delete(target.piece)
+    target.piece = nil
   end
 
   def move(a, b)
@@ -193,6 +194,25 @@ class Board
     start.piece = nil
     take_piece([b[0], b[1] - 1]) if target.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] - 1] }.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] - 1] }.piece.passable == true
     take_piece([b[0], b[1] + 1]) if target.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] + 1] }.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] + 1] }.piece.passable == true
+  end
+
+  def promote_pawn(color, coords)
+    take_piece(coords) unless @squares.find { |sq| sq.coords == coords }.piece.nil?
+    puts "Promote your pawn to:\n[Q]ueen\n[R]ook\n[B]ishop\n[K]night"
+    input = STDIN.gets.chomp.downcase
+    case input
+    when 'q'
+      add_queen(coords, color)
+    when 'r'
+      add_rook(coords, color)
+    when 'b'
+      add_bishop(coords, color)
+    when 'k'
+      add_knight(coords, color)
+    else
+      puts 'Invalid input!'
+      promote_pawn(color, coords)
+    end 
   end
 
   def conv_coords(string)
