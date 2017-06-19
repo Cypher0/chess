@@ -122,7 +122,7 @@ describe 'Chess' do
 
       context 'two squares forward' do
 
-        context 'from starting position' do
+        context 'when it has not moved' do
 
           it 'returns true' do
             game.board.add_pawn([7,1], :white)
@@ -134,7 +134,8 @@ describe 'Chess' do
         context 'from random position' do
 
           it 'returns false' do
-            expect(game.legal_move?([0,2],[0,4])).to be false
+            game.board.move([0,2],[0,4])
+            expect(game.legal_move?([0,4],[0,6])).to be false
           end
         end
       end
