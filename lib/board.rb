@@ -188,6 +188,7 @@ class Board
     if start.piece.class < Pawn && (b[1] - a[1] == 2 || a[1] - b[1] == 2)
       start.piece.passable = true
     end
+    start.piece.has_moved = true if [Pawn, Rook, King].any? { |parent| start.piece.class < parent }
     take_piece(b) unless target.piece.nil?
     target.piece = start.piece
     target.piece.pos = target.coords
