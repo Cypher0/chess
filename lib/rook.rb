@@ -1,9 +1,10 @@
 class Rook
   attr_reader :poss_moves
-  attr_accessor :pos
+  attr_accessor :pos, :has_moved
 
   def initialize(coords)
     @pos = coords
+    @has_moved = false
     gen_moves
   end
 

@@ -1,9 +1,10 @@
 class Pawn
-  attr_accessor :pos, :passable
+  attr_accessor :pos, :passable, :has_moved
   
   def initialize(coords)
     @pos = coords
     @passable = false
+    @has_moved = false
   end
 end
 
@@ -18,7 +19,7 @@ class WPawn < Pawn
 
   def gen_moves(board)
     @poss_moves = []
-    @poss_moves << [0,2] if @pos[1] == 1
+    @poss_moves << [0,2] if @has_moved == false
     @poss_moves << [0,1] if within_board?([@pos[0], @pos[1] + 1]) && find_piece([@pos[0],@pos[1] + 1], board).nil?
     @poss_moves << [-1,1] if within_board?([@pos[0] - 1, @pos[1] + 1]) && !find_piece([@pos[0] - 1, @pos[1] + 1], board).nil? && find_piece([@pos[0] - 1, @pos[1] + 1], board).color != @color
     @poss_moves << [-1,1] if within_board?([@pos[0] - 1, @pos[1] + 1]) && !find_piece([@pos[0] - 1, @pos[1]], board).nil? && find_piece([@pos[0] - 1, @pos[1]], board).passable == true
@@ -38,7 +39,7 @@ class BPawn < Pawn
 
   def gen_moves(board)
     @poss_moves = []
-    @poss_moves << [0,-2] if @pos[1] == 6
+    @poss_moves << [0,-2] if @has_moved == false
     @poss_moves << [0,-1] if within_board?([@pos[0], @pos[1] - 1]) && find_piece([@pos[0],@pos[1] - 1], board).nil?
     @poss_moves << [-1,-1] if within_board?([@pos[0] - 1, @pos[1] - 1]) && !find_piece([@pos[0] - 1, @pos[1] - 1], board).nil? && find_piece([@pos[0] - 1, @pos[1] - 1], board).color != @color
     @poss_moves << [-1,-1] if within_board?([@pos[0] - 1, @pos[1] - 1]) && !find_piece([@pos[0] - 1, @pos[1]], board).nil? && find_piece([@pos[0] - 1, @pos[1]], board).passable == true    
