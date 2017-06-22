@@ -232,4 +232,120 @@ describe 'Chess' do
       expect(game.stalemate?(game.plr2)).to be true
     end
   end
+
+  describe '#can_castle_kingside?' do
+
+    before do
+      game.board.add_king([4,0], :white)
+      game.board.add_rook([7,0], :white)
+    end
+
+    it 'returns true' do
+      expect(game.can_castle_kingside?(game.plr1)).to be true
+    end
+
+    context 'when king has moved' do
+
+      it 'returns false' do
+        game.board.move([4,0],[5,0])
+        game.board.move([5,0],[4,0])
+        expect(game.can_castle_kingside?(game.plr1)).to be false
+      end
+    end
+
+    context 'when rook has moved' do
+
+      it 'returns false' do
+        game.board.move([7,0],[7,7])
+        game.board.move([7,7],[7,0])
+        expect(game.can_castle_kingside?(game.plr1)).to be false
+      end
+    end
+
+    context 'when path is blocked' do
+
+      it 'returns false' do
+        game.board.add_queen([5,0], :white)
+        expect(game.can_castle_kingside?(game.plr1)).to be false
+      end
+    end
+
+    context 'when king is in check' do
+
+      it 'returns false' do
+        game.board.add_queen([4,5], :black)
+        expect(game.can_castle_kingside?(game.plr1)).to be false
+      end
+    end
+
+    context 'when king\'s path is in check' do
+
+      it 'returns false' do
+        game.board.add_queen([5,5], :black)
+        expect(game.can_castle_kingside?(game.plr1)).to be false
+      end
+    end
+  end
+
+  describe '#can_castle_queenside?' do
+
+    before do
+      game.board.add_king([4,0], :white)
+      game.board.add_rook([0,0], :white)
+    end
+
+    it 'returns true' do
+      expect(game.can_castle_queenside?(game.plr1)).to be true
+    end
+
+    context 'when king has moved' do
+
+      it 'returns false' do
+        game.board.move([4,0],[5,0])
+        game.board.move([5,0],[4,0])
+        expect(game.can_castle_queenside?(game.plr1)).to be false
+      end
+    end
+
+    context 'when rook has moved' do
+
+      it 'returns false' do
+        game.board.move([0,0],[0,7])
+        game.board.move([0,7],[0,0])
+        expect(game.can_castle_queenside?(game.plr1)).to be false
+      end
+    end
+
+    context 'when path is blocked' do
+
+      it 'returns false' do
+        game.board.add_queen([3,0], :white)
+        expect(game.can_castle_queenside?(game.plr1)).to be false
+      end
+    end
+
+    context 'when king is in check' do
+
+      it 'returns false' do
+        game.board.add_queen([4,5], :black)
+        expect(game.can_castle_queenside?(game.plr1)).to be false
+      end
+    end
+
+    context 'when king\'s path is in check' do
+
+      it 'returns false' do
+        game.board.add_queen([3,5], :black)
+        expect(game.can_castle_queenside?(game.plr1)).to be false
+      end
+    end
+
+    context 'when rook\'s path is in check' do
+
+      it 'returns true' do
+        game.board.add_queen([1,5], :black)
+        expect(game.can_castle_queenside?(game.plr1)).to be true
+      end
+    end
+  end
 end
