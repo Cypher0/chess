@@ -31,6 +31,36 @@ class Chess
     a.piece.poss_moves.any? { |mv| [a.piece.pos[0] + mv[0], a.piece.pos[1] + mv[1]] == dest }
   end
 
+  def can_castle_kingside?(plr, board = @board.dup, king = board.rem_pieces.find { |pc| pc.class < King && pc.color == plr.color} )
+    result = true
+    if board.squares.find { |sq| sq.coords == [7, king.pos[1]]}.piece.class < Rook
+      rook = board.squares.find { |sq| sq.coords == [7, king.pos[1]] }.piece
+    else
+      return false
+    end
+    result = false if king.has_moved || rook.has_moved || check?(plr, board) || !board.path_clear?(king.pos, rook.pos)
+    board.move(king.pos, [king.pos[0] + 1, king.pos[1]])
+    result = false if check?(plr, board)
+    board.move(king.pos, [king.pos[0] + 1, king.pos[1]])
+    result = false if check?(plr, board)
+    result
+  end
+
+  def can_castle_queenside?(plr, board = @board.dup, king = board.rem_pieces.find { |pc| pc.class < King && pc.color == plr.color} )
+    result = true
+    if board.squares.find { |sq| sq.coords == [0, king.pos[1]]}.piece.class < Rook
+      rook = board.squares.find { |sq| sq.coords == [0, king.pos[1]] }.piece
+    else
+      return false
+    end
+    result = false if king.has_moved || rook.has_moved || check?(plr, board) || !board.path_clear?(king.pos, rook.pos)
+    board.move(king.pos, [king.pos[0] - 1, king.pos[1]])
+    result = false if check?(plr, board)
+    board.move(king.pos, [king.pos[0] - 1, king.pos[1]])
+    result = false if check?(plr, board)
+    result
+  end
+
   def check?(plr, board = @board)
     king = board.rem_pieces.find { |pc| pc.class < King && pc.color == plr.color }
     board.rem_pieces.any? { |pc| pc.color != king.color && legal_move?(pc.pos, king.pos) }
