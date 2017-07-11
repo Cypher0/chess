@@ -14,6 +14,7 @@ class Rook
       @poss_moves << [i,0]
       @poss_moves << [0,i]
     end
+    @poss_moves.delete_if { |i| i == [0,0] }
   end
 end
 
