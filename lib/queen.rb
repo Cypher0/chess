@@ -15,6 +15,7 @@ class Queen
     (1..7).each do |i|
       @poss_moves << [i,i] << [i,-i] << [-i,i] << [-i,-i]
     end
+      @poss_moves.delete_if { |i| i == [0,0] }
   end
 end
 
