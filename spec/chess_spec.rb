@@ -348,4 +348,56 @@ describe 'Chess' do
       end
     end
   end
+
+  describe '#checkmate?' do
+
+    it 'returns true on "rook checkmate"' do
+      game.board.add_king([4,0], :white)
+      game.board.add_rook([7,0], :black)
+      game.board.add_king([4,2], :black)
+      expect(game.checkmate?(game.plr1)).to be true
+    end
+
+    it 'returns true on "bishop checkmate' do
+      game.board.add_bishop([4,2], :black)
+      game.board.add_bishop([5,2], :black)
+      game.board.add_king([7,2], :black)
+      game.board.add_king([7,0], :white)
+      expect(game.checkmate?(game.plr1)).to be true
+    end
+
+    it 'returns true on "fools mate"' do
+      game.board.setup_pieces
+      game.board.move([5,1],[5,2])
+      game.board.move([4,6],[4,4])
+      game.board.move([6,1],[6,3])
+      game.board.move([3,7],[7,3])
+      expect(game.checkmate?(game.plr1)).to be true
+    end
+
+    it 'returns true on "bishop checkmate"' do
+      game.board.add_king([0,7], :white)
+      game.board.add_king([1,5], :black)
+      game.board.add_bishop([2,5], :black)
+      game.board.add_bishop([2,6], :black)
+      expect(game.checkmate?(game.plr1)).to be true
+    end
+
+    it 'returns true on "knight checkmate"' do
+      game.board.add_king([7,7], :white)
+      game.board.add_king([6,5], :black)
+      game.board.add_bishop([5,5], :black)
+      game.board.add_knight([7,5], :black)
+      expect(game.checkmate?(game.plr1)).to be true
+    end
+
+    it 'returns true on "back-rank mate"' do
+      game.board.add_king([6,0], :white)
+      game.board.add_pawn([7,1], :white)
+      game.board.add_pawn([6,1], :white)
+      game.board.add_pawn([5,1], :white)
+      game.board.add_rook([3,0], :black)
+      expect(game.checkmate?(game.plr1)).to be true
+    end
+  end
 end
