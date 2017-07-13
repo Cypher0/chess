@@ -19,12 +19,12 @@ class WPawn < Pawn
 
   def gen_moves(board)
     @poss_moves = []
-    @poss_moves << [0,2] if @has_moved == false
+    @poss_moves << [0,2] if within_board?([@pos[0], @pos[1] + 2]) && @has_moved == false && find_piece([@pos[0],@pos[1] + 2], board).nil?
     @poss_moves << [0,1] if within_board?([@pos[0], @pos[1] + 1]) && find_piece([@pos[0],@pos[1] + 1], board).nil?
     @poss_moves << [-1,1] if within_board?([@pos[0] - 1, @pos[1] + 1]) && !find_piece([@pos[0] - 1, @pos[1] + 1], board).nil? && find_piece([@pos[0] - 1, @pos[1] + 1], board).color != @color
-    @poss_moves << [-1,1] if within_board?([@pos[0] - 1, @pos[1] + 1]) && !find_piece([@pos[0] - 1, @pos[1]], board).nil? && find_piece([@pos[0] - 1, @pos[1]], board).passable == true
+    @poss_moves << [-1,1] if within_board?([@pos[0] - 1, @pos[1] + 1]) && find_piece([@pos[0] - 1, @pos[1]], board).is_a?(BPawn) && find_piece([@pos[0] - 1, @pos[1]], board).passable == true
     @poss_moves << [1,1] if within_board?([@pos[0] + 1, @pos[1] + 1]) && !find_piece([@pos[0] + 1, @pos[1] + 1], board).nil? && find_piece([@pos[0] + 1, @pos[1] + 1], board).color != @color
-    @poss_moves << [1,1] if within_board?([@pos[0] + 1, @pos[1] + 1]) && !find_piece([@pos[0] + 1, @pos[1]], board).nil? && find_piece([@pos[0] + 1, @pos[1]], board).passable == true
+    @poss_moves << [1,1] if within_board?([@pos[0] + 1, @pos[1] + 1]) && find_piece([@pos[0] + 1, @pos[1]], board).is_a?(BPawn) && find_piece([@pos[0] + 1, @pos[1]], board).passable == true
   end
 end
 
@@ -39,12 +39,12 @@ class BPawn < Pawn
 
   def gen_moves(board)
     @poss_moves = []
-    @poss_moves << [0,-2] if @has_moved == false
+    @poss_moves << [0,-2] if within_board?([@pos[0], @pos[1] - 2]) && @has_moved == false && find_piece([@pos[0],@pos[1] - 2], board).nil?
     @poss_moves << [0,-1] if within_board?([@pos[0], @pos[1] - 1]) && find_piece([@pos[0],@pos[1] - 1], board).nil?
     @poss_moves << [-1,-1] if within_board?([@pos[0] - 1, @pos[1] - 1]) && !find_piece([@pos[0] - 1, @pos[1] - 1], board).nil? && find_piece([@pos[0] - 1, @pos[1] - 1], board).color != @color
-    @poss_moves << [-1,-1] if within_board?([@pos[0] - 1, @pos[1] - 1]) && !find_piece([@pos[0] - 1, @pos[1]], board).nil? && find_piece([@pos[0] - 1, @pos[1]], board).passable == true    
+    @poss_moves << [-1,-1] if within_board?([@pos[0] - 1, @pos[1] - 1]) && find_piece([@pos[0] - 1, @pos[1]], board).is_a?(WPawn) && find_piece([@pos[0] - 1, @pos[1]], board).passable == true    
     @poss_moves << [1,-1] if within_board?([@pos[0] + 1, @pos[1] - 1]) && !find_piece([@pos[0] + 1, @pos[1] - 1], board).nil? && find_piece([@pos[0] + 1, @pos[1] - 1], board).color != @color
-    @poss_moves << [1,-1] if within_board?([@pos[0] + 1, @pos[1] - 1]) && !find_piece([@pos[0] + 1, @pos[1]], board).nil? && find_piece([@pos[0] + 1, @pos[1]], board).passable == true
+    @poss_moves << [1,-1] if within_board?([@pos[0] + 1, @pos[1] - 1]) && find_piece([@pos[0] + 1, @pos[1]], board).is_a?(WPawn) && find_piece([@pos[0] + 1, @pos[1]], board).passable == true
   end  
 end
 
