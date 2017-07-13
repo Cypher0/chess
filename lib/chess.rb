@@ -71,12 +71,14 @@ class Chess
     @board.squares.each do |sq|
       start = sq.coords
       next if sq.piece.nil? || sq.piece.color != plr.color
+      sq.piece.gen_moves(board.squares) if sq.piece.class < Pawn
       sq.piece.poss_moves.each do |mv|
         target = [start[0] + mv[0], start[1] + mv[1]]
         if legal_move?(start, target)
           temp_piece << board.squares.find { |sq| sq.coords == target }.piece unless board.squares.find { |sq| sq.coords == target }.piece.nil?
           board.squares.find { |sq| sq.coords == target }.piece = nil
           board.move(start, target)
+          puts start.inspect unless check?(plr, board)
           return false unless check?(plr, board)
           board.move(target, start)
           board.squares.find { |sq| sq.coords == target }.piece = temp_piece.pop unless temp_piece.empty?
@@ -85,4 +87,18 @@ class Chess
     end
     true
   end
+
+  def checkmate?(plr)
+    stalemate?(plr) && check?(plr)
+  end
 end
+
+
+game = Chess.new('a','b')
+
+game.board.setup_pieces
+game.board.move([5,1],[5,2])
+game.board.move([4,6],[4,4])
+game.board.move([6,1],[6,3])
+game.board.move([3,7],[7,3])
+puts game.checkmate?(game.plr1)
