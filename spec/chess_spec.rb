@@ -102,7 +102,7 @@ describe 'Chess' do
 
       context 'one square forward' do
 
-        before { game.board.squares[16].piece.gen_moves(game.board.squares) }
+        before { game.board.squares[16].piece.gen_moves(game.board) }
 
         context 'to empty square' do
 
@@ -126,7 +126,7 @@ describe 'Chess' do
 
           it 'returns true' do
             game.board.add_pawn([7,1], :white)
-            game.board.squares[15].piece.gen_moves(game.board.squares)
+            game.board.squares[15].piece.gen_moves(game.board)
             expect(game.legal_move?([7,1],[7,3])).to be true
           end
         end
@@ -154,7 +154,7 @@ describe 'Chess' do
           it 'returns true' do
             game.board.add_pawn([1,4], :black)
             game.board.move([1,4],[1,2])
-            game.board.squares[16].piece.gen_moves(game.board.squares)
+            game.board.squares[16].piece.gen_moves(game.board)
             expect(game.legal_move?([0,2],[1,3])).to be true
           end
         end
