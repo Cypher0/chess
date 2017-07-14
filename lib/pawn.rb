@@ -6,6 +6,14 @@ class Pawn
     @passable = false
     @has_moved = false
   end
+
+  def find_piece(coords, board)
+    board.squares.find { |sq| sq.coords == coords }.piece
+  end
+
+  def within_board?(coords)
+    coords.all? { |i| i.between?(0,7) }
+  end
 end
 
 class WPawn < Pawn
@@ -17,14 +25,43 @@ class WPawn < Pawn
     @color = :white
   end
 
+  def can_jump_fwd?(pos, board)
+    pos[1] == 1 && board.path_clear?(pos, [pos[0], pos[1] + 3])
+  end
+
+  def can_move_fwd?(pos, board)
+    target_coords = ([pos[0], pos[1] + 1])
+    within_board?(target_coords) && find_piece(target_coords, board).nil?
+  end
+
+  def can_capture_l?(pos, board)
+    target_coords = ([pos[0] + 1, pos[1] - 1])
+    target_piece = find_piece(target_coords, board)
+    within_board?(target_coords) && !target_piece.nil? && target_piece.color != @color
+  end
+
+  def can_capture_r?(pos, board)
+    target_coords = ([pos[0] - 1, pos[1] - 1])
+    target_piece = find_piece(target_coords, board)
+    within_board?(target_coords) && !target_piece.nil? && target_piece.color != @color
+  end
+
+  def can_pass_l?(pos, board)
+    target_piece = find_piece([pos[0] + 1, pos[1]], board)
+    within_board?([pos[0] + 1, pos[1] - 1]) && target_piece.is_a?(WPawn) && target_piece.passable == true
+  end
+
+  def can_pass_r?(pos, board)
+    target_piece = find_piece([pos[0] - 1, pos[1]], board)
+    within_board?([pos[0] - 1, pos[1] - 1]) && target_piece.is_a?(WPawn) && target_piece.passable == true
+  end
+
   def gen_moves(board)
     @poss_moves = []
-    @poss_moves << [0,2] if within_board?([@pos[0], @pos[1] + 2]) && @has_moved == false && find_piece([@pos[0],@pos[1] + 2], board).nil?
-    @poss_moves << [0,1] if within_board?([@pos[0], @pos[1] + 1]) && find_piece([@pos[0],@pos[1] + 1], board).nil?
-    @poss_moves << [-1,1] if within_board?([@pos[0] - 1, @pos[1] + 1]) && !find_piece([@pos[0] - 1, @pos[1] + 1], board).nil? && find_piece([@pos[0] - 1, @pos[1] + 1], board).color != @color
-    @poss_moves << [-1,1] if within_board?([@pos[0] - 1, @pos[1] + 1]) && find_piece([@pos[0] - 1, @pos[1]], board).is_a?(BPawn) && find_piece([@pos[0] - 1, @pos[1]], board).passable == true
-    @poss_moves << [1,1] if within_board?([@pos[0] + 1, @pos[1] + 1]) && !find_piece([@pos[0] + 1, @pos[1] + 1], board).nil? && find_piece([@pos[0] + 1, @pos[1] + 1], board).color != @color
-    @poss_moves << [1,1] if within_board?([@pos[0] + 1, @pos[1] + 1]) && find_piece([@pos[0] + 1, @pos[1]], board).is_a?(BPawn) && find_piece([@pos[0] + 1, @pos[1]], board).passable == true
+    @poss_moves << [0,2] if can_jump_fwd?(@pos, board) 
+    @poss_moves << [0,1] if can_move_fwd?(@pos, board)
+    @poss_moves << [-1,1] if can_capture_l?(@pos, board) || can_pass_l?(@pos, board)
+    @poss_moves << [1,1] if can_capture_r?(@pos, board) || can_pass_r?(@pos, board)
   end
 end
 
@@ -37,21 +74,43 @@ class BPawn < Pawn
     @color = :black
   end
 
+  def can_move_fwd?(pos, board)
+    target_coords = ([pos[0], pos[1] - 1])
+    within_board?(target_coords) && find_piece(target_coords, board).nil?
+  end
+
+  def can_move_fwd?(pos, board)
+    within_board?([pos[0], pos[1] - 1]) &&
+    find_piece([pos[0],pos[1] - 1], board).nil?
+  end
+
+  def can_capture_l?(pos, board)
+    target_coords = ([pos[0] + 1, pos[1] - 1])
+    target_piece = find_piece(target_coords, board)
+    within_board?(target_coords) && !target_piece.nil? && target_piece.color != @color
+  end
+
+  def can_capture_r?(pos, board)
+    target_coords = ([pos[0] - 1, pos[1] - 1])
+    target_piece = find_piece(target_coords, board)
+    within_board?(target_coords) && !target_piece.nil? && target_piece.color != @color
+  end
+
+  def can_pass_l?(pos, board)
+    target_piece = find_piece([pos[0] + 1, pos[1]], board)
+    within_board?([pos[0] + 1, pos[1] - 1]) && target_piece.is_a?(WPawn) && target_piece.passable == true
+  end
+
+  def can_pass_r?(pos, board)
+    target_piece = find_piece([pos[0] - 1, pos[1]], board)
+    within_board?([pos[0] - 1, pos[1] - 1]) && target_piece.is_a?(WPawn) && target_piece.passable == true
+  end
+
   def gen_moves(board)
     @poss_moves = []
-    @poss_moves << [0,-2] if within_board?([@pos[0], @pos[1] - 2]) && @has_moved == false && find_piece([@pos[0],@pos[1] - 2], board).nil?
-    @poss_moves << [0,-1] if within_board?([@pos[0], @pos[1] - 1]) && find_piece([@pos[0],@pos[1] - 1], board).nil?
-    @poss_moves << [-1,-1] if within_board?([@pos[0] - 1, @pos[1] - 1]) && !find_piece([@pos[0] - 1, @pos[1] - 1], board).nil? && find_piece([@pos[0] - 1, @pos[1] - 1], board).color != @color
-    @poss_moves << [-1,-1] if within_board?([@pos[0] - 1, @pos[1] - 1]) && find_piece([@pos[0] - 1, @pos[1]], board).is_a?(WPawn) && find_piece([@pos[0] - 1, @pos[1]], board).passable == true    
-    @poss_moves << [1,-1] if within_board?([@pos[0] + 1, @pos[1] - 1]) && !find_piece([@pos[0] + 1, @pos[1] - 1], board).nil? && find_piece([@pos[0] + 1, @pos[1] - 1], board).color != @color
-    @poss_moves << [1,-1] if within_board?([@pos[0] + 1, @pos[1] - 1]) && find_piece([@pos[0] + 1, @pos[1]], board).is_a?(WPawn) && find_piece([@pos[0] + 1, @pos[1]], board).passable == true
-  end  
-end
-
-def find_piece(coords, board)
-  board.find { |sq| sq.coords == coords }.piece
-end
-
-def within_board?(coords)
-  coords.all? { |i| i.between?(0,7) }
+    @poss_moves << [0,-2] if can_jump_fwd?(@pos, board) 
+    @poss_moves << [0,-1] if can_move_fwd?(@pos, board)
+    @poss_moves << [1,-1] if can_capture_l?(@pos, board) || can_pass_l?(@pos, board)
+    @poss_moves << [-1,-1] if can_capture_r?(@pos, board) || can_pass_r?(@pos, board)
+  end
 end
