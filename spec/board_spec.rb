@@ -93,8 +93,8 @@ describe 'Board' do
   describe '#move' do
 
     before do 
-      board.add_king([0,0], :white)
-      board.add_pawn([1,0], :black)
+      board.add_piece([0,0], :white, 'king')
+      board.add_piece([1,0], :black, 'pawn')
       board.move([0,0],[1,0])
     end
 
@@ -189,7 +189,7 @@ describe 'Board' do
 
   describe '#path_clear?' do
 
-    before { board.add_pawn([2,2], :white) }
+    before { board.add_piece([2,2], :white, 'pawn') }
 
     context 'when moving by one square' do
 
