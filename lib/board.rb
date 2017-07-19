@@ -12,8 +12,8 @@ class Board
   def initialize
     @rem_pieces = []
     @taken_pieces = []
-    @rows = []
     gen_board
+    gen_rows
   end
 
   def gen_board
@@ -25,105 +25,61 @@ class Board
     end
   end
 
-  def add_king(coords, color)
-    pos = @squares.find { |sq| sq.coords == coords }
-    if color == :white
-      pos.piece = WKing.new(coords)
-    elsif color == :black
-      pos.piece = BKing.new(coords)
-    end
-    @rem_pieces << pos.piece
+  def find_square(coords, board = @squares)
+    board.find { |sq| sq.coords == coords }
   end
 
-  def add_queen(coords, color)
-    pos = @squares.find { |sq| sq.coords == coords }
-    if color == :white
-      pos.piece = WQueen.new(coords)
-    elsif color == :black
-      pos.piece = BQueen.new(coords)
-    end
-    @rem_pieces << pos.piece
-  end
-
-  def add_pawn(coords, color)
-    pos = @squares.find { |sq| sq.coords == coords }
-    if color == :white
-      pos.piece = WPawn.new(coords)
-    elsif color == :black
-      pos.piece = BPawn.new(coords)
-    end
-    @rem_pieces << pos.piece
-  end
-
-  def add_rook(coords, color)
-    pos = @squares.find { |sq| sq.coords == coords }
-    if color == :white
-      pos.piece = WRook.new(coords)
-    elsif color == :black
-      pos.piece = BRook.new(coords)
-    end
-    @rem_pieces << pos.piece
-  end
-
-  def add_bishop(coords, color)
-    pos = @squares.find { |sq| sq.coords == coords }
-    if color == :white
-      pos.piece = WBishop.new(coords)
-    elsif color == :black
-      pos.piece = BBishop.new(coords)
-    end
-    @rem_pieces << pos.piece
-  end
-
-  def add_knight(coords, color)
-    pos = @squares.find { |sq| sq.coords == coords }
-    if color == :white
-      pos.piece = WKnight.new(coords)
-    elsif color == :black
-      pos.piece = BKnight.new(coords)
-    end
+  def add_piece(coords, color, piece)
+    pos = find_square(coords)
+    clr_str = if color == :white
+                'W'
+              elsif color == :black
+                'B'
+              end
+    piece_str = clr_str + piece.capitalize
+    pos.piece = Object.const_get(piece_str).new(coords)
     @rem_pieces << pos.piece
   end
 
   def setup_kings
-    add_king([4,0], :white)
-    add_king([4,7], :black)
+    add_piece([4,0], :white, 'king')
+    add_piece([4,7], :black, 'king')
   end
 
   def setup_queens
-    add_queen([3,0], :white)
-    add_queen([3,7], :black)
+    add_piece([3,0], :white, 'queen')
+    add_piece([3,7], :black, 'queen')
   end
 
   def setup_pawns
     (0..7).each do |i|
-      add_pawn([i,1], :white)
-      add_pawn([i,6], :black)
+      add_piece([i,1], :white, 'pawn')
+      add_piece([i,6], :black, 'pawn')
     end
   end
 
   def setup_rooks
-    add_rook([0,0], :white)
-    add_rook([7,0], :white)
-    add_rook([0,7], :black)
-    add_rook([7,7], :black)
+    add_piece([0,0], :white, 'rook')
+    add_piece([7,0], :white, 'rook')
+    add_piece([0,7], :black, 'rook')
+    add_piece([7,7], :black, 'rook')
   end
 
   def setup_bishops
-    add_bishop([2,0], :white)
-    add_bishop([5,0], :white)
-    add_bishop([2,7], :black)
-    add_bishop([5,7], :black)
+    add_piece([2,0], :white, 'bishop')
+    add_piece([5,0], :white, 'bishop')
+    add_piece([2,7], :black, 'bishop')
+    add_piece([5,7], :black, 'bishop')
   end
 
   def setup_knights
-    add_knight([1,0], :white)
-    add_knight([6,0], :white)
-    add_knight([1,7], :black)
-    add_knight([6,7], :black)
+    add_piece([1,0], :white, 'knight')
+    add_piece([6,0], :white, 'knight')
+    add_piece([1,7], :black, 'knight')
+    add_piece([6,7], :black, 'knight')
   end
 
-  def setup_pieces # DRY this!
+  def setup_pieces
     setup_kings
     setup_queens
     setup_pawns
@@ -133,11 +89,16 @@ class Board
   end
 
   def gen_rows
+    @rows = []
     i = 0
     8.times do
       @rows << @squares[i..(i+7)]
       i += 8
     end
+  end
+
+  def print_square(square)
+    print square.piece.nil? ? "  " : "#{square.piece.sym} "
   end
 
   def print_row(i)
@@ -160,56 +121,79 @@ class Board
 
   def display
     row_index = 7
-    @rows.each do |row|
+    @rows.reverse.each do |row|
       print_row(row_index)
       row.each do |sq|
-        if sq.piece.nil?
-          print "  "
-        else
-          print "#{sq.piece.sym} "
-        end
+        print_square(sq)
       end
       print "\n"
       row_index -= 1
     end
     print_cols
+    print "\n"
   end
 
   def take_piece(coords)
-    target = @squares.find { |sq| sq.coords == coords }
+    target = find_square(coords)
     @taken_pieces << target.piece
     @rem_pieces.delete(target.piece)
     target.piece = nil
   end
 
-  def move(a, b)
-    start = @squares.find { |sq| sq.coords == a }
-    target = @squares.find { |sq| sq.coords == b }
-    if start.piece.class < Pawn && (b[1] - a[1] == 2 || a[1] - b[1] == 2)
-      start.piece.passable = true
-    end
-    start.piece.has_moved = true if [Pawn, Rook, King].any? { |parent| start.piece.class < parent }
-    take_piece(b) unless target.piece.nil?
+  def pawn_jump?(start, target)
+    start_sq = find_square(start)
+    start_sq.piece.class < Pawn && (target[1] - start[1] == 2 || start[1] - target[1] == 2)
+  end
+
+  def white_passant?(pos)
+    target_pc = find_square(pos).piece
+    passant_pc = find_square([pos[0], pos[1] - 1]).piece
+    target_pc.class < Pawn && passant_pc.class < Pawn && passant_pc.passable
+  end
+
+  def black_passant?(pos)
+    target_pc = find_square(pos).piece
+    passant_pc = find_square([pos[0], pos[1] + 1]).piece
+    target_pc.class < Pawn && passant_pc.class < Pawn && passant_pc.passable
+  end
+
+  def take_en_passant(pos)
+    target_sq = find_square(pos)
+    w_passant = ([pos[0], pos[0] - 1])
+    b_passant = ([pos[0], pos[0] + 1])
+    take_piece(w_passant) if white_passant?(pos)
+    take_piece(b_passant) if black_passant?(pos)
+  end
+
+  def move_piece(start, target)
     target.piece = start.piece
     target.piece.pos = target.coords
     start.piece = nil
-    take_piece([b[0], b[1] - 1]) if target.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] - 1] }.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] - 1] }.piece.passable == true
-    take_piece([b[0], b[1] + 1]) if target.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] + 1] }.piece.class < Pawn && @squares.find { |sq| sq.coords == [b[0], b[1] + 1] }.piece.passable == true
+  end
+
+  def move(start, target)
+    start_sq = find_square(start)
+    target_sq = find_square(target)
+    start_sq.piece.passable = true if pawn_jump?(start, target)
+    start_sq.piece.has_moved = true if [Pawn, Rook, King].any? { |parent| start_sq.piece.class < parent }
+    take_piece(target) unless target_sq.piece.nil?
+    move_piece(start_sq, target_sq)
+    take_en_passant(target) if target[1].between?(1,6)
   end
 
   def promote_pawn(color, coords)
-    take_piece(coords) unless @squares.find { |sq| sq.coords == coords }.piece.nil?
+    take_piece(coords) unless find_square(coords).piece.nil?
     puts "Promote your pawn to:\n[Q]ueen\n[R]ook\n[B]ishop\n[K]night"
     input = STDIN.gets.chomp.downcase
     case input
     when 'q'
-      add_queen(coords, color)
+      add_piece(coords, color, 'queen')
     when 'r'
-      add_rook(coords, color)
+      add_piece(coords, color, 'rook')
     when 'b'
-      add_bishop(coords, color)
+      add_piece(coords, color, 'bishop')
     when 'k'
-      add_knight(coords, color)
+      add_piece(coords, color, 'knight')
     else
       puts 'Invalid input!'
       promote_pawn(color, coords)
@@ -223,22 +207,32 @@ class Board
     result
   end
 
-  def draw_str_path(start, dest)
+  def draw_hor_path(start, dest)
     path = []
-    if start[0] == dest[0]
-      start[1] < dest[1] ? current = [start[0], start[1] + 1] : current = [start[0], start[1] - 1]
-      until current == dest do
-        path << @squares.find { |sq| sq.coords == current }
-        current[1] < dest[1] ? current[1] += 1 : current[1] -= 1
-      end
-    else
-      start[0] < dest[0] ? current = [start[0] + 1, start[1]] : current = [start[0] - 1, start[1]]
-      until current == dest do
-        path << @squares.find { |sq| sq.coords == current }
-        current[0] < dest[0] ? current[0] += 1 : current[0] -= 1
-      end
+    start[0] < dest[0] ? current = [start[0] + 1, start[1]] : current = [start[0] - 1, start[1]]
+    until current == dest do
+      path << find_square(current)
+      current[0] < dest[0] ? current[0] += 1 : current[0] -= 1
     end
     path
+  end
+
+  def draw_vert_path(start, dest)
+    path = []
+    start[1] < dest[1] ? current = [start[0], start[1] + 1] : current = [start[0], start[1] - 1]
+    until current == dest do
+      path << find_square(current)
+      current[1] < dest[1] ? current[1] += 1 : current[1] -= 1
+    end
+    path
+  end
+
+  def draw_str_path(start, dest)
+    if start[0] == dest[0]
+      draw_vert_path(start, dest)
+    else
+      draw_hor_path(start, dest)
+    end
   end
 
   def draw_diag_path(start, dest)
@@ -247,7 +241,7 @@ class Board
     start[0] < dest[0] ? current[0] = start[0] + 1 : current[0] = start[0] - 1
     start[1] < dest[1] ? current[1] = start[1] + 1 : current[1] = start[1] - 1
     until current == dest do
-      path << @squares.find { |sq| sq.coords == current }
+      path << find_square(current)
       current[0] < dest[0] ? current[0] += 1 : current[0] -= 1
       current[1] < dest[1] ? current[1] += 1 : current[1] -= 1
     end
