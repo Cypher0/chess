@@ -21,10 +21,10 @@ describe 'Chess' do
   describe '#legal_move?' do
 
     before do
-      game.board.add_queen([0,0], :white)
-      game.board.add_knight([1,0], :black)
-      game.board.add_pawn([3,1], :black)
-      game.board.add_pawn([0,2], :white)
+      game.board.add_piece([0,0], :white, 'queen')
+      game.board.add_piece([1,0], :black, 'knight')
+      game.board.add_piece([3,1], :black, 'pawn')
+      game.board.add_piece([0,2], :white, 'pawn')
     end
 
     context 'moving a queen' do
@@ -114,7 +114,7 @@ describe 'Chess' do
         context 'to occupied square' do
          
           it 'returns false' do
-            game.board.add_pawn([0,3], :black)
+            game.board.add_piece([0,3], :black, 'pawn')
             expect(game.legal_move?([0,2],[0,3])).to be false
           end
         end
@@ -125,7 +125,7 @@ describe 'Chess' do
         context 'when it has not moved' do
 
           it 'returns true' do
-            game.board.add_pawn([7,1], :white)
+            game.board.add_piece([7,1], :white, 'pawn')
             game.board.squares[15].piece.gen_moves(game.board)
             expect(game.legal_move?([7,1],[7,3])).to be true
           end
@@ -152,7 +152,7 @@ describe 'Chess' do
         context 'en passant' do
 
           it 'returns true' do
-            game.board.add_pawn([1,4], :black)
+            game.board.add_piece([1,4], :black, 'pawn')
             game.board.move([1,4],[1,2])
             game.board.squares[16].piece.gen_moves(game.board)
             expect(game.legal_move?([0,2],[1,3])).to be true
@@ -162,7 +162,7 @@ describe 'Chess' do
         context 'capturing a piece' do
 
           it 'returns true' do
-            game.board.add_pawn([1,3], :black)
+            game.board.add_piece([1,3], :black, 'pawn')
             expect(game.legal_move?([0,2],[1,3])).to be true
           end
         end
@@ -173,13 +173,13 @@ describe 'Chess' do
   describe '#check?' do
 
     before do
-      game.board.add_king([0,0], :black)
+      game.board.add_piece([0,0], :black, 'king')
     end
 
     context 'when targeted by opponent\'s piece' do
 
       it 'returns true' do
-        game.board.add_knight([1,2], :white)
+        game.board.add_piece([1,2], :white, 'knight')
         expect(game.check?(game.plr2)).to be true
       end
     end
@@ -187,7 +187,7 @@ describe 'Chess' do
     context 'when targeted by own piece' do
 
       it 'returns false' do
-        game.board.add_queen([7,0], :black)
+        game.board.add_piece([7,0], :black, 'queen')
         expect(game.check?(game.plr2)).to be false
       end
     end
@@ -195,8 +195,8 @@ describe 'Chess' do
     context 'when opponent\'s path is blocked' do
 
       it 'returns false' do
-        game.board.add_queen([0,7], :white)
-        game.board.add_pawn([0,4], :white)
+        game.board.add_piece([0,7], :white, 'queen')
+        game.board.add_piece([0,4], :white, 'pawn')
         expect(game.check?(game.plr2)).to be false
       end
     end
@@ -205,30 +205,30 @@ describe 'Chess' do
   describe '#stalemate?' do
 
     it 'returns true ex. 1' do
-      game.board.add_king([5,6], :white)
-      game.board.add_queen([6,5], :white)
-      game.board.add_king([7,7], :black)
+      game.board.add_piece([5,6], :white, 'king')
+      game.board.add_piece([6,5], :white, 'queen')
+      game.board.add_piece([7,7], :black, 'king')
       expect(game.stalemate?(game.plr2)).to be true
     end
 
     it 'returns true ex. 2' do
-      game.board.add_king([0,0], :black)
-      game.board.add_rook([1,1], :white)
-      game.board.add_king([2,2], :white)
+      game.board.add_piece([0,0], :black, 'king')
+      game.board.add_piece([1,1], :white, 'rook')
+      game.board.add_piece([2,2], :white, 'king')
       expect(game.stalemate?(game.plr2)).to be true
     end
 
     it 'returns true ex. 3' do
-      game.board.add_king([0,7], :black)
-      game.board.add_king([0,5], :white)
-      game.board.add_bishop([5,3], :white)
+      game.board.add_piece([0,7], :black, 'king')
+      game.board.add_piece([0,5], :white, 'king')
+      game.board.add_piece([5,3], :white, 'bishop')
       expect(game.stalemate?(game.plr2)).to be true
     end
 
     it 'returns true ex. 4' do
-      game.board.add_queen([5,5], :white)
-      game.board.add_pawn([5,6], :white)
-      game.board.add_king([5,7], :black)
+      game.board.add_piece([5,5], :white, 'queen')
+      game.board.add_piece([5,6], :white, 'pawn')
+      game.board.add_piece([5,7], :black, 'king')
       expect(game.stalemate?(game.plr2)).to be true
     end
   end
@@ -236,8 +236,8 @@ describe 'Chess' do
   describe '#can_castle_kingside?' do
 
     before do
-      game.board.add_king([4,0], :white)
-      game.board.add_rook([7,0], :white)
+      game.board.add_piece([4,0], :white, 'king')
+      game.board.add_piece([7,0], :white, 'rook')
     end
 
     it 'returns true' do
@@ -265,7 +265,7 @@ describe 'Chess' do
     context 'when path is blocked' do
 
       it 'returns false' do
-        game.board.add_queen([5,0], :white)
+        game.board.add_piece([5,0], :white, 'queen')
         expect(game.can_castle_kingside?(game.plr1)).to be false
       end
     end
@@ -273,7 +273,7 @@ describe 'Chess' do
     context 'when king is in check' do
 
       it 'returns false' do
-        game.board.add_queen([4,5], :black)
+        game.board.add_piece([4,5], :black, 'queen')
         expect(game.can_castle_kingside?(game.plr1)).to be false
       end
     end
@@ -281,7 +281,7 @@ describe 'Chess' do
     context 'when king\'s path is in check' do
 
       it 'returns false' do
-        game.board.add_queen([5,5], :black)
+        game.board.add_piece([5,5], :black, 'queen')
         expect(game.can_castle_kingside?(game.plr1)).to be false
       end
     end
@@ -290,8 +290,8 @@ describe 'Chess' do
   describe '#can_castle_queenside?' do
 
     before do
-      game.board.add_king([4,0], :white)
-      game.board.add_rook([0,0], :white)
+      game.board.add_piece([4,0], :white, 'king')
+      game.board.add_piece([0,0], :white, 'rook')
     end
 
     it 'returns true' do
@@ -319,7 +319,7 @@ describe 'Chess' do
     context 'when path is blocked' do
 
       it 'returns false' do
-        game.board.add_queen([3,0], :white)
+        game.board.add_piece([3,0], :white, 'queen')
         expect(game.can_castle_queenside?(game.plr1)).to be false
       end
     end
@@ -327,7 +327,7 @@ describe 'Chess' do
     context 'when king is in check' do
 
       it 'returns false' do
-        game.board.add_queen([4,5], :black)
+        game.board.add_piece([4,5], :black, 'queen')
         expect(game.can_castle_queenside?(game.plr1)).to be false
       end
     end
@@ -335,7 +335,7 @@ describe 'Chess' do
     context 'when king\'s path is in check' do
 
       it 'returns false' do
-        game.board.add_queen([3,5], :black)
+        game.board.add_piece([3,5], :black, 'queen')
         expect(game.can_castle_queenside?(game.plr1)).to be false
       end
     end
@@ -343,7 +343,7 @@ describe 'Chess' do
     context 'when rook\'s path is in check' do
 
       it 'returns true' do
-        game.board.add_queen([1,5], :black)
+        game.board.add_piece([1,5], :black, 'queen')
         expect(game.can_castle_queenside?(game.plr1)).to be true
       end
     end
@@ -352,17 +352,17 @@ describe 'Chess' do
   describe '#checkmate?' do
 
     it 'returns true on "rook checkmate"' do
-      game.board.add_king([4,0], :white)
-      game.board.add_rook([7,0], :black)
-      game.board.add_king([4,2], :black)
+      game.board.add_piece([4,0], :white, 'king')
+      game.board.add_piece([7,0], :black, 'rook')
+      game.board.add_piece([4,2], :black, 'king')
       expect(game.checkmate?(game.plr1)).to be true
     end
 
     it 'returns true on "bishop checkmate' do
-      game.board.add_bishop([4,2], :black)
-      game.board.add_bishop([5,2], :black)
-      game.board.add_king([7,2], :black)
-      game.board.add_king([7,0], :white)
+      game.board.add_piece([4,2], :black, 'bishop')
+      game.board.add_piece([5,2], :black, 'bishop')
+      game.board.add_piece([7,2], :black, 'king')
+      game.board.add_piece([7,0], :white, 'king')
       expect(game.checkmate?(game.plr1)).to be true
     end
 
@@ -376,27 +376,27 @@ describe 'Chess' do
     end
 
     it 'returns true on "bishop checkmate"' do
-      game.board.add_king([0,7], :white)
-      game.board.add_king([1,5], :black)
-      game.board.add_bishop([2,5], :black)
-      game.board.add_bishop([2,6], :black)
+      game.board.add_piece([0,7], :white, 'king')
+      game.board.add_piece([1,5], :black, 'king')
+      game.board.add_piece([2,5], :black, 'bishop')
+      game.board.add_piece([2,6], :black, 'bishop')
       expect(game.checkmate?(game.plr1)).to be true
     end
 
     it 'returns true on "knight checkmate"' do
-      game.board.add_king([7,7], :white)
-      game.board.add_king([6,5], :black)
-      game.board.add_bishop([5,5], :black)
-      game.board.add_knight([7,5], :black)
+      game.board.add_piece([7,7], :white, 'king')
+      game.board.add_piece([6,5], :black, 'king')
+      game.board.add_piece([5,5], :black, 'bishop')
+      game.board.add_piece([7,5], :black, 'knight')
       expect(game.checkmate?(game.plr1)).to be true
     end
 
     it 'returns true on "back-rank mate"' do
-      game.board.add_king([6,0], :white)
-      game.board.add_pawn([7,1], :white)
-      game.board.add_pawn([6,1], :white)
-      game.board.add_pawn([5,1], :white)
-      game.board.add_rook([3,0], :black)
+      game.board.add_piece([6,0], :white, 'king')
+      game.board.add_piece([7,1], :white, 'pawn')
+      game.board.add_piece([6,1], :white, 'pawn')
+      game.board.add_piece([5,1], :white, 'pawn')
+      game.board.add_piece([3,0], :black, 'rook')
       expect(game.checkmate?(game.plr1)).to be true
     end
   end
