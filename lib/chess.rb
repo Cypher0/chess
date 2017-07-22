@@ -5,10 +5,10 @@ class Chess
   attr_reader :plr1, :plr2
   attr_accessor :act_plr, :board
 
-  def initialize(name_1, name_2)
+  def initialize(name1, name2)
     @board = Board.new
-    @plr1 = Player.new(name_1, :white)
-    @plr2 = Player.new(name_2, :black)
+    @plr1 = Player.new(name1, :white)
+    @plr2 = Player.new(name2, :black)
     @act_plr = @plr1
   end
 
@@ -20,21 +20,30 @@ class Chess
                end
   end
 
-  def legal_move?(start, dest, board = @board)
-    return false unless (start + dest).all? { |i| i.between?(0,7)}
-    a = board.squares.find { |sq| sq.coords == start }
-    b = board.squares.find { |sq| sq.coords == dest }
-    a.piece.gen_moves(@board.squares) if a.piece.class < Pawn
-    !a.piece.nil? &&
-    board.path_clear?(start, dest) &&
-    (b.piece.nil? || a.piece.color != b.piece.color) &&
-    a.piece.poss_moves.any? { |mv| [a.piece.pos[0] + mv[0], a.piece.pos[1] + mv[1]] == dest }
+  def not_own_piece?(start, dest)
+    dest.piece.nil? || start.piece.color != dest.piece.color
   end
 
-  def can_castle_kingside?(plr, board = @board.dup, king = board.rem_pieces.find { |pc| pc.class < King && pc.color == plr.color} )
+  def piece_can_move?(start, dest)
+    start.piece.poss_moves.any? { |mv| [start.piece.pos[0] + mv[0], start.piece.pos[1] + mv[1]] == dest.coords }
+  end
+
+  def legal_move?(start, dest, board = @board)
+    return false unless (start + dest).all? { |i| i.between?(0, 7) }
+    start_sq = board.find_square(start)
+    dest_sq = board.find_square(dest)
+    start_sq.piece.gen_moves(board) if start_sq.piece.class < Pawn
+    board.path_clear?(start, dest) &&
+    not_own_piece?(start_sq, dest_sq) &&
+    piece_can_move?(start_sq, dest_sq)
+  end
+
+  def can_castle_kingside?(plr, board = @board.dup)
     result = true
-    if board.squares.find { |sq| sq.coords == [7, king.pos[1]]}.piece.class < Rook
-      rook = board.squares.find { |sq| sq.coords == [7, king.pos[1]] }.piece
+    king = board.rem_pieces.find { |pc| pc.class < King && pc.color == plr.color }
+    rook_sq = board.find_square([7, king.pos[1]])
+    if rook_sq.piece.class < Rook
+      rook = rook_sq.piece
     else
       return false
     end
@@ -46,10 +55,12 @@ class Chess
     result
   end
 
-  def can_castle_queenside?(plr, board = @board.dup, king = board.rem_pieces.find { |pc| pc.class < King && pc.color == plr.color} )
+  def can_castle_queenside?(plr, board = @board.dup)
     result = true
-    if board.squares.find { |sq| sq.coords == [0, king.pos[1]]}.piece.class < Rook
-      rook = board.squares.find { |sq| sq.coords == [0, king.pos[1]] }.piece
+    king = board.rem_pieces.find { |pc| pc.class < King && pc.color == plr.color }
+    rook_sq = board.find_square([0, king.pos[1]])
+    if rook_sq.piece.class < Rook
+      rook = board.find_square([0, king.pos[1]]).piece
     else
       return false
     end
@@ -71,18 +82,17 @@ class Chess
     @board.squares.each do |sq|
       start = sq.coords
       next if sq.piece.nil? || sq.piece.color != plr.color
-      sq.piece.gen_moves(board.squares) if sq.piece.class < Pawn
+      sq.piece.gen_moves(board) if sq.piece.class < Pawn
       sq.piece.poss_moves.each do |mv|
-        target = [start[0] + mv[0], start[1] + mv[1]]
-        if legal_move?(start, target)
-          temp_piece << board.squares.find { |sq| sq.coords == target }.piece unless board.squares.find { |sq| sq.coords == target }.piece.nil?
-          board.squares.find { |sq| sq.coords == target }.piece = nil
-          board.move(start, target)
-          puts start.inspect unless check?(plr, board)
-          return false unless check?(plr, board)
-          board.move(target, start)
-          board.squares.find { |sq| sq.coords == target }.piece = temp_piece.pop unless temp_piece.empty?
-        end
+        dest = [start[0] + mv[0], start[1] + mv[1]]
+        dest_sq = board.find_square(dest)
+        next unless legal_move?(start, dest)
+        temp_piece << dest_sq.piece unless dest_sq.piece.nil?
+        dest_sq.piece = nil
+        board.move(start, dest)
+        return false unless check?(plr, board)
+        board.move(dest, start)
+        dest_sq.piece = temp_piece.pop unless temp_piece.empty?
       end
     end
     true
@@ -91,14 +101,8 @@ class Chess
   def checkmate?(plr)
     stalemate?(plr) && check?(plr)
   end
+
+  def game_over?
+    checkmate?(@act_plr) || stalemate?(@act_plr)
+  end
 end
-
-
-game = Chess.new('a','b')
-
-game.board.setup_pieces
-game.board.move([5,1],[5,2])
-game.board.move([4,6],[4,4])
-game.board.move([6,1],[6,3])
-game.board.move([3,7],[7,3])
-puts game.checkmate?(game.plr1)
