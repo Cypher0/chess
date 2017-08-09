@@ -115,7 +115,7 @@ class BPawn < Pawn
 
   def can_pass_r?(pos, board)
     target_coords = ([pos[0] - 1, pos[1] - 1])
-    target_pc_coords = ([pos[0] + 1, pos[1]])
+    target_pc_coords = ([pos[0] - 1, pos[1]])
     return false unless within_board?(target_coords) && within_board?(target_pc_coords)
     target_piece = find_piece(target_pc_coords, board)
     target_piece.is_a?(WPawn) && target_piece.passable == true
