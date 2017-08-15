@@ -18,6 +18,15 @@ describe 'Chess' do
     end
   end
 
+  describe '#conv_coords' do
+
+    it 'converts chess position to coordinates' do
+      expect(game.conv_coords('a1')).to eql([0,0])
+      expect(game.conv_coords('C5')).to eql([2,4])
+    end
+  end
+
+
   describe '#legal_move?' do
 
     before do
@@ -25,6 +34,7 @@ describe 'Chess' do
       game.board.add_piece([1,0], :black, 'knight')
       game.board.add_piece([3,1], :black, 'pawn')
       game.board.add_piece([0,2], :white, 'pawn')
+      game.board.add_piece([7,7], :white, 'king')
     end
 
     context 'moving a queen' do
@@ -226,6 +236,7 @@ describe 'Chess' do
     end
 
     it 'returns true ex. 4' do
+      game.board.add_piece([0,0], :white, 'king')
       game.board.add_piece([5,5], :white, 'queen')
       game.board.add_piece([5,6], :white, 'pawn')
       game.board.add_piece([5,7], :black, 'king')
@@ -346,6 +357,40 @@ describe 'Chess' do
         game.board.add_piece([1,5], :black, 'queen')
         expect(game.can_castle_queenside?(game.plr1)).to be true
       end
+    end
+  end
+
+  describe '#perform_qcastl' do
+
+    before { game.board.add_piece([4,0], :white, 'king')
+             game.board.add_piece([0,0], :white, 'rook')
+             game.perform_qcastl(game.plr1) }
+
+    it 'moves king to correct square' do
+      expect(game.board.squares[4].piece).to be nil
+      expect(game.board.squares[2].piece).to be_a WKing
+    end
+
+    it 'moves rook to correct square' do
+      expect(game.board.squares[0].piece).to be nil
+      expect(game.board.squares[3].piece).to be_a WRook
+    end
+  end
+
+  describe '#perform_kcastl' do
+
+    before { game.board.add_piece([4,0], :white, 'king')
+             game.board.add_piece([7,0], :white, 'rook')
+             game.perform_kcastl(game.plr1) }
+
+    it 'moves king to correct square' do
+      expect(game.board.squares[4].piece).to be nil
+      expect(game.board.squares[6].piece).to be_a WKing
+    end
+
+    it 'moves rook to correct square' do
+      expect(game.board.squares[7].piece).to be nil
+      expect(game.board.squares[5].piece).to be_a WRook
     end
   end
 

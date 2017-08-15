@@ -82,14 +82,6 @@ describe 'Board' do
     end
   end
 
-  describe '#conv_coords' do
-
-    it 'converts chess position to coordinates' do
-      expect(board.conv_coords('a1')).to eql([0,0])
-      expect(board.conv_coords('C5')).to eql([2,4])
-    end
-  end
-
   describe '#move' do
 
     before do 

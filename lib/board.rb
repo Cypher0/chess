@@ -117,9 +117,19 @@ class Board
     ("a".."d").each do |n|
       print_col(n)
     end
+    print "\n\n"
+  end
+
+  def print_taken
+    print 'Taken pieces:  ' unless taken_pieces.empty?
+    @taken_pieces.each do |pc|
+      print "#{pc.sym} "
+    end
+    print "\n\n"
   end
 
   def display
+    print "\n"
     row_index = 7
     @rows.reverse.each do |row|
       print_row(row_index)
@@ -130,7 +140,7 @@ class Board
       row_index -= 1
     end
     print_cols
-    print "\n"
+    print_taken
   end
 
   def take_piece(coords)
@@ -145,30 +155,37 @@ class Board
     start_sq.piece.class < Pawn && (target[1] - start[1] == 2 || start[1] - target[1] == 2)
   end
 
-  def white_passant?(pos)
+  def w_did_pass?(pos)
+    return false unless pos[1] == 5
     target_pc = find_square(pos).piece
-    passant_pc = find_square([pos[0], pos[1] - 1]).piece
-    target_pc.class < Pawn && passant_pc.class < Pawn && passant_pc.passable
+    passed_pc = find_square([pos[0], pos[1] - 1]).piece
+    target_pc.is_a?(WPawn) && passed_pc.is_a?(BPawn) && passed_pc.passable
   end
 
-  def black_passant?(pos)
+  def b_did_pass?(pos)
+    return false unless pos[1] == 2
     target_pc = find_square(pos).piece
-    passant_pc = find_square([pos[0], pos[1] + 1]).piece
-    target_pc.class < Pawn && passant_pc.class < Pawn && passant_pc.passable
+    passed_pc = find_square([pos[0], pos[1] + 1]).piece
+    target_pc.is_a?(BPawn) && passed_pc.is_a?(WPawn) && passed_pc.passable
   end
 
-  def take_en_passant(pos)
-    target_sq = find_square(pos)
-    w_passant = ([pos[0], pos[0] - 1])
-    b_passant = ([pos[0], pos[0] + 1])
-    take_piece(w_passant) if white_passant?(pos)
-    take_piece(b_passant) if black_passant?(pos)
+  def take_passed_pc(pos)
+    take_piece([pos[0], pos[1] - 1]) if w_did_pass?(pos)
+    take_piece([pos[0], pos[1] + 1]) if b_did_pass?(pos)
   end
 
   def move_piece(start, target)
     target.piece = start.piece
     target.piece.pos = target.coords
     start.piece = nil
+  end
+
+  def w_can_promote?(target)
+    target.piece.is_a?(WPawn) && target.piece.pos[1] == 7
+  end
+
+  def b_can_promote?(target)
+    target.piece.is_a?(BPawn) && target.piece.pos[1] == 0
   end
 
   def move(start, target)
@@ -178,7 +195,9 @@ class Board
     start_sq.piece.has_moved = true if [Pawn, Rook, King].any? { |parent| start_sq.piece.class < parent }
     take_piece(target) unless target_sq.piece.nil?
     move_piece(start_sq, target_sq)
-    take_en_passant(target) if target[1].between?(1,6)
+    take_passed_pc(target) if target_sq.piece.class < Pawn
+    promote_pawn(:white, target) if w_can_promote?(target_sq)
+    promote_pawn(:black, target) if b_can_promote?(target_sq)
   end
 
   def promote_pawn(color, coords)
@@ -198,13 +217,6 @@ class Board
       puts 'Invalid input!'
       promote_pawn(color, coords)
     end 
-  end
-
-  def conv_coords(string)
-    result = []
-    cols = { 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4, 'f' => 5, 'g' => 6, 'h' => 7 }
-    result << cols[string[0].downcase] << string[1].to_i - 1
-    result
   end
 
   def draw_hor_path(start, dest)
