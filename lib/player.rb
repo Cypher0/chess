@@ -1,3 +1,4 @@
+# class for playes, init with name, color and type(cpu or human)
 class Player
   attr_reader :name, :color
   attr_accessor :type

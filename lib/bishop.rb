@@ -1,3 +1,4 @@
+# class for bishop, init with position and possible moves params
 class Bishop
   attr_reader :poss_moves
   attr_accessor :pos
@@ -6,7 +7,8 @@ class Bishop
     gen_moves
     @pos = coords
   end
-
+  
+  # generate possible moves for bishop
   def gen_moves
     @poss_moves = []
     (1..7).each do |i|

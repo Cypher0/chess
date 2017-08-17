@@ -1,3 +1,4 @@
+# class for knight, init with position and possible moves
 class Knight
   attr_reader :poss_moves
   attr_accessor :pos

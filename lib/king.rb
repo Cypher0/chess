@@ -1,3 +1,4 @@
+# class for king, init with position, possible moves and has_moved params
 class King
   attr_reader :poss_moves
   attr_accessor :pos, :has_moved
